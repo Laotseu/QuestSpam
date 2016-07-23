@@ -1,0 +1,16 @@
+## Interface: 60200
+## Title: Quest Spam
+## Author: Wizwonk (updated by LaoTseu)
+## Version: v60200-1 (2015-06-23)
+## Notes: Notifies your party/raid members about your quest and leveling progress
+## DefaultState: Enabled
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
+
+## SavedVariables: QuestSpamPref
+
+QuestSpamLocText.lua
+QuestSpam.lua
+QuestSpamOptions.lua
+
+
