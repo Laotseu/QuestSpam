@@ -1,7 +1,7 @@
 ## Interface: 70000
 ## Title: Quest Spam
 ## Author: Wizwonk (updated by LaoTseu)
-## Version: v60200-1 (2015-06-23)
+## Version: v70000-1
 ## Notes: Notifies your party/raid members about your quest and leveling progress
 ## DefaultState: Enabled
 ## LoadManagers: AddonLoader
