@@ -563,23 +563,57 @@ end
 --        If a quest just got completed, display a message and play a sound
 -- ===========================================================================
 
+do -- Closure to set the bucket
+	-- QS:ScanQuestLogBucket() will only be cast after DELAY_TIME has passed after the last 
+
+	local DELAY_TIME = 0.1
+	local delay, _init
+	local f = _G.CreateFrame("Frame")
+	f:Hide()
+	f:SetScript("OnUpdate", function(self, elapsed)
+		delay = delay - elapsed
+		if delay < 0 then
+			QS:ScanQuestLogBucket(_init)
+			f:Hide()
+			_init = nil
+		end
+	end)
+
+	function QS:ScanQuestLog(init)
+		_init = init or _init
+		delay = DELAY_TIME
+		f:Show()
+	end
+
+end -- Closure
+
 local questTitles = {}
 local completedQuests, oldCompletedQuests = {}, {}
-function QS:ScanQuestLog(init)
+local oldQuestNb = -1
+function QS:ScanQuestLogBucket(init)
 
 	completedQuests, oldCompletedQuests = oldCompletedQuests, completedQuests
 	wipe(completedQuests)
 	wipe(questTitles)
 
+	-- Debug stuff
+	-- Chat(("ScanQuestLog: new %s, old %s"):format(select(2,_G.GetNumQuestLogEntries()) or "nil", oldQuestNb or "nil"))
+	-- oldQuestNb = select(2,_G.GetNumQuestLogEntries())
+
 	-- Find completed quests
 	for i=1,_G.GetNumQuestLogEntries() do
 		local questTitle, _, _, isHeader, _, isComplete, _, questID = _G.GetQuestLogTitle(i)
 		if not isHeader and questID then
+			-- Debug stuff
+			-- if questID == 648 then
+			-- 	Chat(("[%s] isComplete = %s"):format(questID, isComplete or "nil"))
+			-- end
+
 			completedQuests[questID] = isComplete == 1 and true or false
 			questTitles[questID] = questTitle
 
 			-- Find completed quests
-			if isComplete and not oldCompletedQuests[questID] and not firstTime then
+			if isComplete == 1 and not oldCompletedQuests[questID] and not firstTime then
 
 				-- The quest was not completed before
 				if QS.pref["details"] then
@@ -602,34 +636,14 @@ function QS:ScanQuestLog(init)
 		firstTime = nil
 		return
 	end
-
-	-- -- Find completed quests
-	-- for questID, isComplete in pairs(oldCompletedQuests) do
-	-- 	-- Newly completed quest?
-	-- 	if not isComplete and completedQuests[questID] then
-	-- 		local questTitle = questTitles[questID]
-
-	-- 		-- The quest was not completed before
-	-- 		if QS.pref["details"] then
-	-- 			QuestSpam:SpamMessage(L.QUESTSPAM_QUESTPROGRESS .. questTitle .. " (" .. _G.COMPLETE .. ")");
-	-- 		end
-
-	-- 		-- Let's also display a message on screen
-	-- 		_G.UIErrorsFrame:AddMessage(questTitle .. " (" .. _G.COMPLETE .. ")", 1.0, 1.0, 0.0, 1.0, 4);
-
-	-- 		-- And a little grunt telling us it's done
-	-- 		if QS.pref["grunt_sound"] then
-	-- 			_G.PlaySoundFile("Sound\\Creature\\Peon\\PeonBuildingComplete1.ogg")
-	-- 		end
-	-- 	end
-	-- end
 end
 
 function QS:DumpQuestLog()
-	Chat("Quest log")
+	local _, nbQuests = _G.GetNumQuestLogEntries()
+	Chat(("Quest log (%s entries)"):format(nbQuests))
 	Chat("======================")
 	for qid, title in pairs(questTitles) do
-		Chat(("[%s] %s"):format(qid, title))
+		Chat(("[%s] %s %s"):format(qid, title, completedQuests[qid] and "(Complete)" or ""))
 	end
 end
 
