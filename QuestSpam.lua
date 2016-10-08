@@ -302,10 +302,14 @@ function QuestSpam:OnEvent(event, arg1, ...)
 		if (event == "UI_INFO_MESSAGE") then
 			-- Quest Progress:
 			local message = ...
+			-- err("message = %s",message)
 			local uQuestText = message:gsub(L.QUESTSPAM_QUESTTEXT, "%1", 1);
 			if ( uQuestText ~= message) then
+				-- err("uQuestText = %s",uQuestText)
 				if (QS.pref["details"]) then
-					QuestSpam:SpamMessage(L.QUESTSPAM_QUESTPROGRESS .. message);
+					if not QS.pref.filter_quests or uQuestText ~= "Grisly Trophy" then
+						QuestSpam:SpamMessage(L.QUESTSPAM_QUESTPROGRESS .. message);
+					end
 				end
 			else
 				QuestSpam:ParseMessage(message);
@@ -325,6 +329,7 @@ function QuestSpam:OnEvent(event, arg1, ...)
 			QuestSpam:SpamMessage(QS.pref.level_msg:format(arg1));
 
 		elseif (event == "CHAT_MSG_SYSTEM") then
+			-- err("uQuestText = %s",arg1)
 			QuestSpam:ParseMessage(arg1);
 		end
 	end

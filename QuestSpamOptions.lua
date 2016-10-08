@@ -162,6 +162,14 @@ local function GetOptions()
 				set       = function(info, v) pref.details = v end,
 				order     = 9,
 			},
+			FilterQuests = {
+				name      = "Filter Test Your Strength spams",
+				desc      = 'When this is set, the Grisly Trophy spams will not be broadcasted.',
+				type      = 'toggle',
+				get       = function() return pref.filter_quests end,
+				set       = function(info, v) pref.filter_quests = v end,
+				order     = 9.5,
+			},
 			QuestSpamDiscovery = {
 				name      = L.QUESTSPAM_DISCOVERY_LABEL,
 				desc      = L.QUESTSPAM_DISCOVERY_TOOLTIP,
